@@ -10,12 +10,12 @@ cryptography (e.g., ML-KEM/Kyber-based key exchange).
 
 import ctypes
 import platform
-import socket
-import ssl
 import sys
 from ctypes import c_void_p, c_int, c_long, c_char_p
 from typing import Optional
 from urllib.parse import urlparse
+
+import requests
 
 # OpenSSL constants
 SSL_CTRL_GET_NEGOTIATED_GROUP = 134
@@ -220,48 +220,41 @@ def make_https_request(url: str) -> Optional[TlsTrace]:
     if ssl_ctrl_func is None or ssl_group_to_name_func is None:
         return TlsTrace("Err: OpenSSL library not found", "N/A")
 
-    # Parse the URL
-    parsed = urlparse(url)
-    hostname = parsed.hostname
-    port = parsed.port or 443
-    path = parsed.path or "/"
-
-    if not hostname:
-        raise ValueError("Invalid URL: no hostname")
-
     try:
-        # Create a TCP socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(10)
-
-        # Connect to the server
-        sock.connect((hostname, port))
-
-        # Create SSL context
-        context = ssl.create_default_context()
-
-        # Wrap the socket with SSL/TLS
-        ssl_sock = context.wrap_socket(sock, server_hostname=hostname)
-
-        # At this point, the TLS handshake is complete
+        # Store SSL socket reference during connection
+        captured_ssl_sock = [None]  # Use list to allow modification in nested function
+        
+        # Import urllib3 to monkey-patch it
+        from urllib3.util.ssl_ import ssl_wrap_socket
+        from urllib3.connection import HTTPSConnection
+        
+        # Save the original connect method
+        original_connect = HTTPSConnection.connect
+        
+        def patched_connect(self):
+            # Call the original connect method
+            original_connect(self)
+            # Capture the SSL socket
+            if hasattr(self, 'sock') and self.sock:
+                captured_ssl_sock[0] = self.sock
+        
+        # Temporarily replace the connect method
+        HTTPSConnection.connect = patched_connect
+        
+        try:
+            # Make the HTTPS request using requests library
+            response = requests.get(url, timeout=10)
+        finally:
+            # Restore the original connect method
+            HTTPSConnection.connect = original_connect
+        
+        if captured_ssl_sock[0] is None:
+            return TlsTrace("Err: Could not access SSL socket", "N/A")
+        
         # Extract TLS metadata
         group_name = get_negotiated_group(
-            ssl_sock, ssl_ctrl_func, ssl_group_to_name_func)
-        cipher_suite = get_cipher_suite(ssl_sock)
-
-        # Make a simple HTTP request
-        request = (f"GET {path} HTTP/1.1\r\n"
-                   f"Host: {hostname}\r\n"
-                   f"Connection: close\r\n\r\n")
-        ssl_sock.sendall(request.encode())
-
-        # Read a bit of the response (we don't need full response,
-        # just to verify connection)
-        ssl_sock.recv(1024)
-
-        # Close the connection
-        ssl_sock.close()
-        sock.close()
+            captured_ssl_sock[0], ssl_ctrl_func, ssl_group_to_name_func)
+        cipher_suite = get_cipher_suite(captured_ssl_sock[0])
 
         return TlsTrace(group_name, cipher_suite)
 
