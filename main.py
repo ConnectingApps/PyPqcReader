@@ -2,9 +2,10 @@
 """
 TLS Post-Quantum Cryptography Tracer (Outgoing HTTP Client)
 
-This application makes an HTTPS request to a remote server and inspects the TLS handshake
-to extract the key exchange group and cipher suite, revealing whether the connection uses
-post-quantum cryptography (e.g., ML-KEM/Kyber-based key exchange).
+This application makes an HTTPS request to a remote server and
+inspects the TLS handshake to extract the key exchange group and
+cipher suite, revealing whether the connection uses post-quantum
+cryptography (e.g., ML-KEM/Kyber-based key exchange).
 """
 
 import ctypes
@@ -15,8 +16,6 @@ import sys
 from ctypes import c_void_p, c_int, c_long, c_char_p
 from typing import Optional
 from urllib.parse import urlparse
-
-import _ssl  # pylint: disable=unused-import  # Used for SSL internal structure access
 
 # OpenSSL constants
 SSL_CTRL_GET_NEGOTIATED_GROUP = 134
@@ -50,12 +49,14 @@ def load_openssl_functions():
             except OSError:
                 return None, None
 
-    # SSL_ctrl function signature: long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg)
+    # SSL_ctrl function signature:
+    # long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg)
     ssl_ctrl = libssl.SSL_ctrl
     ssl_ctrl.argtypes = [c_void_p, c_int, c_long, c_void_p]
     ssl_ctrl.restype = c_long
 
-    # SSL_group_to_name function signature: const char *SSL_group_to_name(SSL *ssl, int id)
+    # SSL_group_to_name function signature:
+    # const char *SSL_group_to_name(SSL *ssl, int id)
     ssl_group_to_name = libssl.SSL_group_to_name
     ssl_group_to_name.argtypes = [c_void_p, c_int]
     ssl_group_to_name.restype = c_char_p
@@ -77,20 +78,23 @@ def get_ssl_pointer(ssl_socket) -> Optional[int]:
         if ssl_obj is None:
             return None
 
-        # The _ssl._SSLSocket object is a C extension object that wraps the SSL* pointer
-        # We need to extract the pointer using ctypes
+        # The _ssl._SSLSocket object is a C extension object that
+        # wraps the SSL* pointer. We need to extract the pointer
+        # using ctypes
 
         # Get the id of the Python object, which is its memory address
         obj_id = id(ssl_obj)
 
         # For CPython, we can access the PyObject structure
-        # The SSL* pointer is typically stored in the object's internal structure
+        # The SSL* pointer is typically stored in the object's
+        # internal structure
 
         # This is a fragile approach that depends on CPython internals
-        # For a more robust solution, we would need to use a custom C extension
+        # For a more robust solution, we would need to use a custom
+        # C extension
 
-        # Try to get the SSL pointer through the _ssl module's internal structure
-        # _ssl module is imported at the top level
+        # Try to get the SSL pointer through the _ssl module's
+        # internal structure. _ssl module is imported at the top level
 
         # Access the internal pointer - this is implementation-specific
         # The _ssl._SSLSocket object contains the SSL* pointer
@@ -104,10 +108,12 @@ def get_ssl_pointer(ssl_socket) -> Optional[int]:
                 ("ob_refcnt", ctypes.c_ssize_t),
                 ("ob_type", c_void_p)
             ]
-        # Note: PyObject and _ssl are used for understanding internal structure
+        # Note: PyObject and _ssl are used for understanding
+        # internal structure
 
-        # For _ssl._SSLSocket, the SSL* pointer is stored after the PyObject header
-        # This offset varies by Python version and implementation
+        # For _ssl._SSLSocket, the SSL* pointer is stored after
+        # the PyObject header. This offset varies by Python version
+        # and implementation
 
         # Alternative: Use the socket's fileno() to get the file descriptor,
         # but this won't give us the SSL* pointer directly
@@ -118,21 +124,24 @@ def get_ssl_pointer(ssl_socket) -> Optional[int]:
         # For now, we'll use a platform-specific approach
         # that works with the internal structure of _ssl._SSLSocket
 
-        # The SSL* pointer is typically at a fixed offset in the _SSLSocket structure
-        # This is highly implementation-dependent
+        # The SSL* pointer is typically at a fixed offset in the
+        # _SSLSocket structure. This is highly implementation-dependent
 
-        # Cast the ssl_obj to a ctypes void pointer to extract internal data
-        # Note: This is a hack and may not work across all Python versions
+        # Cast the ssl_obj to a ctypes void pointer to extract
+        # internal data. Note: This is a hack and may not work across
+        # all Python versions
 
         # Try to access via ctypes pointer manipulation
         ssl_obj_ptr = ctypes.cast(obj_id, ctypes.POINTER(ctypes.c_void_p))
 
         # The SSL* pointer is typically stored at a specific offset
-        # For CPython 3.x, it's usually at offset 24 or 32 bytes from the object start
-        # (after ob_refcnt, ob_type, and other fields)
+        # For CPython 3.x, it's usually at offset 24 or 32 bytes
+        # from the object start (after ob_refcnt, ob_type, and other
+        # fields)
 
         # Try multiple common offsets
-        for offset in [3, 4, 5, 6]:  # These are word offsets (multiply by pointer size)
+        # These are word offsets (multiply by pointer size)
+        for offset in [3, 4, 5, 6]:
             try:
                 potential_ssl_ptr = ssl_obj_ptr[offset]
                 if potential_ssl_ptr and potential_ssl_ptr != 0:
@@ -148,11 +157,13 @@ def get_ssl_pointer(ssl_socket) -> Optional[int]:
         return None
 
 
-def get_negotiated_group(ssl_socket, ssl_ctrl_func, ssl_group_to_name_func) -> str:
+def get_negotiated_group(ssl_socket, ssl_ctrl_func,
+                         ssl_group_to_name_func) -> str:
     """
     Query OpenSSL for the negotiated key exchange group.
 
-    Returns the group name (e.g., "X25519", "X25519MLKEM768") or an error message.
+    Returns the group name (e.g., "X25519", "X25519MLKEM768") or an
+    error message.
     """
     try:
         # Get the native SSL* pointer
@@ -162,7 +173,8 @@ def get_negotiated_group(ssl_socket, ssl_ctrl_func, ssl_group_to_name_func) -> s
             return "Err: Handle Not Found"
 
         # Call SSL_ctrl to get the negotiated group ID
-        group_id = ssl_ctrl_func(ssl_ptr, SSL_CTRL_GET_NEGOTIATED_GROUP, 0, None)
+        group_id = ssl_ctrl_func(
+            ssl_ptr, SSL_CTRL_GET_NEGOTIATED_GROUP, 0, None)
 
         if group_id == 0:
             return "Unknown (GroupID=0)"
@@ -201,7 +213,8 @@ def make_https_request(url: str) -> Optional[TlsTrace]:
         url: The target URL (e.g., "https://www.google.com")
 
     Returns:
-        TlsTrace object with group and cipher suite, or None if extraction failed
+        TlsTrace object with group and cipher suite, or None if
+        extraction failed
     """
     # Check if running on Linux
     if not is_linux():
@@ -238,7 +251,8 @@ def make_https_request(url: str) -> Optional[TlsTrace]:
 
         # At this point, the TLS handshake is complete
         # Extract TLS metadata
-        group_name = get_negotiated_group(ssl_sock, ssl_ctrl_func, ssl_group_to_name_func)
+        group_name = get_negotiated_group(
+            ssl_sock, ssl_ctrl_func, ssl_group_to_name_func)
         cipher_suite = get_cipher_suite(ssl_sock)
 
         # Make a simple HTTP request
@@ -247,7 +261,8 @@ def make_https_request(url: str) -> Optional[TlsTrace]:
                    f"Connection: close\r\n\r\n")
         ssl_sock.sendall(request.encode())
 
-        # Read a bit of the response (we don't need full response, just to verify connection)
+        # Read a bit of the response (we don't need full response,
+        # just to verify connection)
         ssl_sock.recv(1024)
 
         # Close the connection
