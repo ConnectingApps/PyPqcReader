@@ -102,12 +102,6 @@ def get_ssl_pointer(ssl_socket) -> Optional[int]:
 
         # Create a ctypes structure to match the Python object layout
         # pylint: disable=unused-variable,too-few-public-methods
-        class PyObject(ctypes.Structure):
-            """CPython PyObject structure for internal pointer access"""
-            _fields_ = [
-                ("ob_refcnt", ctypes.c_ssize_t),
-                ("ob_type", c_void_p)
-            ]
         # Note: PyObject and _ssl are used for understanding
         # internal structure
 
