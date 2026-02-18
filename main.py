@@ -12,8 +12,8 @@ import ctypes
 import platform
 import sys
 from ctypes import c_void_p, c_int, c_long, c_char_p
+from dataclasses import dataclass
 from typing import Optional
-from urllib.parse import urlparse
 
 import requests
 
@@ -21,11 +21,11 @@ import requests
 SSL_CTRL_GET_NEGOTIATED_GROUP = 134
 
 
-class TlsTrace:  # pylint: disable=too-few-public-methods
+@dataclass(frozen=True)
+class TlsTrace:
     """Container for TLS handshake metadata"""
-    def __init__(self, group: str, cipher_suite: str):
-        self.group = group
-        self.cipher_suite = cipher_suite
+    group: str
+    cipher_suite: str
 
 
 def is_linux() -> bool:
