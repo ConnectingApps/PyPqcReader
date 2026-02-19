@@ -81,7 +81,7 @@ def pqcreader_request(
     
     except Exception as e:
         # If request_callback raises, we still propagate it but with trace info
-        tls_trace = TlsTrace(f"Err: {str(e)}", "N/A")
+        e.tls_trace = TlsTrace(f"Err: {str(e)}", "N/A")
         raise
 
 
