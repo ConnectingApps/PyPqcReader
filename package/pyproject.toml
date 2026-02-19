@@ -43,7 +43,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ConnectingApps/PyPqcReader
+Homepage = "https://github.com/ConnectingApps/PyPqcReader"
 Repository = "https://github.com/ConnectingApps/PyPqcReader"
 Issues = "https://github.com/ConnectingApps/PyPqcReader/issues"
 Documentation = "https://github.com/ConnectingApps/PyPqcReader/blob/main/package/README.md"
