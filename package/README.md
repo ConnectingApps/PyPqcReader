@@ -24,7 +24,7 @@ pip install pqcreader
 
 - Python 3.7+
 - Linux operating system (required for OpenSSL tracing)
-- OpenSSL 3.x or 1.1.x
+- OpenSSL 3.x
 
 ## Quick Start
 
