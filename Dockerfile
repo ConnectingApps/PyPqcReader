@@ -19,7 +19,7 @@ RUN wget https://github.com/openssl/openssl/releases/download/openssl-3.5.0/open
     && cd .. \
     && rm -rf openssl-3.5.0 openssl-3.5.0.tar.gz
 
-# Set up library path to use custom OpenSSL
+# Setup library path to use custom OpenSSL
 ENV LD_LIBRARY_PATH=/usr/local/openssl-3.5/lib64:/usr/local/openssl-3.5/lib:$LD_LIBRARY_PATH
 ENV PATH=/usr/local/openssl-3.5/bin:$PATH
 
