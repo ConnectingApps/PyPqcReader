@@ -2,6 +2,10 @@
 
 TLS Post-Quantum Cryptography tracer for Python HTTP requests.
 
+## ⚠️ WARNING: Linux Only
+
+> **⚠️ IMPORTANT:** This library is **Linux-only**. It will **NOT** work on Windows, macOS, or any other operating system. The library uses Linux-specific OpenSSL library loading and relies on system-level integration that is not available on other platforms. Please ensure you are running on a Linux system before attempting to use this library.
+
 ## Overview
 
 `pqcreader` is a Python library that wraps HTTP requests to capture TLS handshake metadata, with a focus on post-quantum cryptography (PQC) key exchange groups like ML-KEM (formerly Kyber).
