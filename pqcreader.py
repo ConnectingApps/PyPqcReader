@@ -31,11 +31,11 @@ def pqcreader_request(
         - tls_trace: TlsTrace object or None if extraction disabled/failed
     
     Example:
-        >>> response, trace = pqcreader_request(
+        response, trace = pqcreader_request(
         ...     lambda: requests.get("https://www.google.com", timeout=10)
         ... )
-        >>> print(f"Status: {response.status_code}")
-        >>> print(f"Group: {trace.group}")
+        print(f"Status: {response.status_code}")
+        print(f"Group: {trace.group}")
     """
     if not extract_trace or not is_linux():
         # No tracing - just execute the callback
