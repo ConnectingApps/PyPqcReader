@@ -111,7 +111,28 @@ This project is licensed under the GNU General Public License v3.0 or later - se
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We warmly welcome contributions to this open source project! Whether you're fixing bugs, adding features, improving documentation, or sharing ideas, your contributions help advance post-quantum cryptography adoption.
+
+**🌟 How to Contribute:**
+
+- Visit our GitHub repository: [https://github.com/ConnectingApps/PyPqcReader](https://github.com/ConnectingApps/PyPqcReader)
+- Fork the repository and create a feature branch
+- Submit a Pull Request with your improvements
+- Report issues or suggest enhancements in the Issues section
+
+**🔍 Test Your Infrastructure:**
+
+Want to check if your webserver and browser are ready for post-quantum cryptography? Visit [quantumsafeaudit.com](https://quantumsafeaudit.com) to analyze your infrastructure for PQC readiness.
+
+## Professional Services
+
+Need expert guidance on post-quantum cryptography implementation? 
+
+**💼 Hire a PQC Expert:**
+
+I'm available as a freelance post-quantum cryptography consultant. Connect with me on LinkedIn to discuss your PQC security needs:
+
+👉 [https://www.linkedin.com/in/daanacohen](https://www.linkedin.com/in/daanacohen)
 
 ## Acknowledgments
 
