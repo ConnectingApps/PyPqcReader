@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pqcreader"
-version = "1.0.0"
+version = "1.0.1"
 description = "TLS Post-Quantum Cryptography tracer for Python HTTP requests"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -43,10 +43,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/PyPqcReader"
-Repository = "https://github.com/yourusername/PyPqcReader"
-Issues = "https://github.com/yourusername/PyPqcReader/issues"
-Documentation = "https://github.com/yourusername/PyPqcReader#readme"
+Homepage = "https://github.com/ConnectingApps/PyPqcReader
+Repository = "https://github.com/ConnectingApps/PyPqcReader"
+Issues = "https://github.com/ConnectingApps/PyPqcReader/issues"
+Documentation = "https://github.com/ConnectingApps/PyPqcReader/blob/main/package/README.md"
 
 [tool.setuptools.packages.find]
 include = ["pqcreader*"]
