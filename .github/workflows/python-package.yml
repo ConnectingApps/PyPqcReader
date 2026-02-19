@@ -5,9 +5,15 @@ name: Python package
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - "main"
+      - "feature/*"
+      - "dependabot/**"
   pull_request:
-    branches: [ "main" ]
+    branches: 
+      - "main"
+      - "feature/*"
+      - "dependabot/**"
 
 jobs:
   build:
@@ -48,3 +54,11 @@ jobs:
     - name: Execute main.py
       run: |
         python main.py
+    
+    - name: Publish pip package
+      if: github.ref == 'refs/heads/main'
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PIP_TOKEN }}
+      run: |
+        python -m twine upload package/dist/*
