@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pqcreader"
+version = "0.1.0"
+description = "TLS Post-Quantum Cryptography tracer for Python HTTP requests"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "Daan Acohen", email = "daan@example.com"}
+]
+maintainers = [
+    {name = "Daan Acohen", email = "daan@example.com"}
+]
+keywords = [
+    "tls",
+    "post-quantum",
+    "cryptography",
+    "pqc",
+    "ssl",
+    "https",
+    "security",
+    "ml-kem",
+    "kyber",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Internet :: WWW/HTTP",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+    "urllib3>=1.26.0",
+    "requests>=2.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/PyPqcReader"
+Repository = "https://github.com/yourusername/PyPqcReader"
+Issues = "https://github.com/yourusername/PyPqcReader/issues"
+Documentation = "https://github.com/yourusername/PyPqcReader#readme"
+
+[tool.setuptools.packages.find]
+include = ["pqcreader*"]
+exclude = ["examples*"]

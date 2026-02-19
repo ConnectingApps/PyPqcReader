@@ -4,7 +4,7 @@ PQC Reader - TLS trace wrapper for HTTP requests
 from typing import Callable, Tuple, Any, Optional
 from urllib3.connection import HTTPSConnection
 
-from openssl_wrapper import (
+from pqcreader._openssl_wrapper import (
     is_linux,
     load_openssl_functions,
     get_negotiated_group,
